@@ -23,8 +23,6 @@ use Magento\Framework\Model\AbstractExtensibleModel;
  *
  * TODO: Maybe this should be part of interface and we get rid of magic here
  *
- * TODO: Fix getters so they won't return any data set through $model->setData($key, $value)
- *
  * @method Block setStoreId(array $storeId)
  * @method array getStoreId()
  */
@@ -116,7 +114,7 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
      */
     public function getIdentifier(): ?string
     {
-        return $this->getData(self::IDENTIFIER);
+        return $this->getDataAsStringOrNull(self::IDENTIFIER);
     }
 
     /**
@@ -126,7 +124,7 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
      */
     public function getTitle(): ?string
     {
-        return $this->getData(self::TITLE);
+        return $this->getDataAsStringOrNull(self::TITLE);
     }
 
     /**
@@ -136,7 +134,7 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
      */
     public function getContent(): ?string
     {
-        return $this->getData(self::CONTENT);
+        return $this->getDataAsStringOrNull(self::CONTENT);
     }
 
     /**
@@ -146,7 +144,7 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
      */
     public function getCreationTime(): ?string
     {
-        return $this->getData(self::CREATION_TIME);
+        return $this->getDataAsStringOrNull(self::CREATION_TIME);
     }
 
     /**
@@ -156,7 +154,7 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
      */
     public function getUpdateTime(): ?string
     {
-        return $this->getData(self::UPDATE_TIME);
+        return $this->getDataAsStringOrNull(self::UPDATE_TIME);
     }
 
     /**
@@ -315,5 +313,19 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
     public function setExtensionAttributes(BlockExtensibleExtensionInterface $extensionAttributes): void
     {
         $this->_setExtensionAttributes($extensionAttributes);
+    }
+
+    /**
+     * Get data as string or null
+     *
+     * @param string $key
+     * @return string|null
+     */
+    private function getDataAsStringOrNull(string $key): ?string
+    {
+        $data = $this->_getData($key);
+        return empty($data)
+            ? null
+            : (string) $data;
     }
 }

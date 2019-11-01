@@ -25,8 +25,6 @@ use Magento\Framework\Registry;
 /**
  * TODO: Add missing unit tests
  *
- * TODO: Fix getters so they won't return any data set through $model->setData($key, $value)
- *
  * Class PageExtensible
  *
  * @package Magento\Cms\Model
@@ -255,7 +253,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getIdentifier(): ?string
     {
-        return $this->getData(self::IDENTIFIER);
+        return $this->getDataAsStringOrNull(self::IDENTIFIER);
     }
 
     /**
@@ -265,7 +263,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getTitle(): ?string
     {
-        return $this->getData(self::TITLE);
+        return $this->getDataAsStringOrNull(self::TITLE);
     }
 
     /**
@@ -275,7 +273,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getPageLayout(): ?string
     {
-        return $this->getData(self::PAGE_LAYOUT);
+        return $this->getDataAsStringOrNull(self::PAGE_LAYOUT);
     }
 
     /**
@@ -285,7 +283,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getMetaTitle(): ?string
     {
-        return $this->getData(self::META_TITLE);
+        return $this->getDataAsStringOrNull(self::META_TITLE);
     }
 
     /**
@@ -295,7 +293,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getMetaKeywords(): ?string
     {
-        return $this->getData(self::META_KEYWORDS);
+        return $this->getDataAsStringOrNull(self::META_KEYWORDS);
     }
 
     /**
@@ -305,7 +303,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getMetaDescription(): ?string
     {
-        return $this->getData(self::META_DESCRIPTION);
+        return $this->getDataAsStringOrNull(self::META_DESCRIPTION);
     }
 
     /**
@@ -315,7 +313,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getContentHeading(): ?string
     {
-        return $this->getData(self::CONTENT_HEADING);
+        return $this->getDataAsStringOrNull(self::CONTENT_HEADING);
     }
 
     /**
@@ -325,7 +323,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getContent(): ?string
     {
-        return $this->getData(self::CONTENT);
+        return $this->getDataAsStringOrNull(self::CONTENT);
     }
 
     /**
@@ -335,7 +333,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getCreationTime(): ?string
     {
-        return $this->getData(self::CREATION_TIME);
+        return $this->getDataAsStringOrNull(self::CREATION_TIME);
     }
 
     /**
@@ -345,7 +343,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getUpdateTime(): ?string
     {
-        return $this->getData(self::UPDATE_TIME);
+        return $this->getDataAsStringOrNull(self::UPDATE_TIME);
     }
 
     /**
@@ -355,7 +353,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getSortOrder(): ?string
     {
-        return $this->getData(self::SORT_ORDER);
+        return $this->getDataAsStringOrNull(self::SORT_ORDER);
     }
 
     /**
@@ -365,7 +363,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getLayoutUpdateXml(): ?string
     {
-        return $this->getData(self::LAYOUT_UPDATE_XML);
+        return $this->getDataAsStringOrNull(self::LAYOUT_UPDATE_XML);
     }
 
     /**
@@ -375,7 +373,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getCustomTheme(): ?string
     {
-        return $this->getData(self::CUSTOM_THEME);
+        return $this->getDataAsStringOrNull(self::CUSTOM_THEME);
     }
 
     /**
@@ -385,7 +383,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getCustomRootTemplate(): ?string
     {
-        return $this->getData(self::CUSTOM_ROOT_TEMPLATE);
+        return $this->getDataAsStringOrNull(self::CUSTOM_ROOT_TEMPLATE);
     }
 
     /**
@@ -395,7 +393,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getCustomLayoutUpdateXml(): ?string
     {
-        return $this->getData(self::CUSTOM_LAYOUT_UPDATE_XML);
+        return $this->getDataAsStringOrNull(self::CUSTOM_LAYOUT_UPDATE_XML);
     }
 
     /**
@@ -405,7 +403,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getCustomThemeFrom(): ?string
     {
-        return $this->getData(self::CUSTOM_THEME_FROM);
+        return $this->getDataAsStringOrNull(self::CUSTOM_THEME_FROM);
     }
 
     /**
@@ -415,7 +413,7 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      */
     public function getCustomThemeTo(): ?string
     {
-        return $this->getData(self::CUSTOM_THEME_TO);
+        return $this->getDataAsStringOrNull(self::CUSTOM_THEME_TO);
     }
 
     /**
@@ -718,5 +716,19 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
     public function setExtensionAttributes(PageExtensibleExtensionInterface $extensionAttributes): void
     {
         $this->_setExtensionAttributes($extensionAttributes);
+    }
+
+    /**
+     * Get data as string or null
+     *
+     * @param string $key
+     * @return string|null
+     */
+    private function getDataAsStringOrNull(string $key): ?string
+    {
+        $data = $this->_getData($key);
+        return empty($data)
+            ? null
+            : (string) $data;
     }
 }
