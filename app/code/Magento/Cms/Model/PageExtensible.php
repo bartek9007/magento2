@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Magento\Cms\Model;
 
+use Magento\Cms\Api\Data\PageAvailableStatusesProviderInterface;
 use Magento\Cms\Api\Data\PageExtensibleExtensionInterface;
 use Magento\Cms\Api\Data\PageExtensibleInterface;
 use Magento\Cms\Helper\Page as PageHelper;
@@ -16,6 +17,7 @@ use Magento\Cms\Model\ResourceModel\Page as PageResource;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\AbstractExtensibleModel;
@@ -35,16 +37,6 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
      * @var string
      */
     public const NOROUTE_PAGE_ID = 'no-route';
-
-    /**
-     * @var int
-     */
-    public const STATUS_ENABLED = 1;
-
-    /**
-     * @var int
-     */
-    public const STATUS_DISABLED = 0;
 
     /**
      * @var string
@@ -209,20 +201,22 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
     }
 
     /**
-     * TODO: Move to separate OptionSourceInterface instance
-     *
      * Prepare page's statuses.
-     * Available event cms_page_get_available_statuses to customize statuses.
      *
      * @return array
      *
      * @deprecated
      *
+     * @see \Magento\Cms\Api\Data\PageAvailableStatusesProviderInterface
+     *
      * @codeCoverageIgnore
      */
     public function getAvailableStatuses(): array
     {
-        return [self::STATUS_ENABLED => __('Enabled'), self::STATUS_DISABLED => __('Disabled')];
+        $objectManager = ObjectManager::getInstance();
+        $pageAvailableStatusesProvider = $objectManager->get(PageAvailableStatusesProviderInterface::class);
+        /** @var $pageAvailableStatusesProvider PageAvailableStatusesProviderInterface */
+        return $pageAvailableStatusesProvider->get();
     }
 
     /**
@@ -685,7 +679,9 @@ class PageExtensible extends AbstractExtensibleModel implements PageExtensibleIn
 
         if (!empty($storeDataByStoresKey)) {
             return is_array($storeDataByStoresKey) ? $storeDataByStoresKey : [$storeDataByStoresKey];
-        } elseif (!empty($storeDataByStoreIdKey)) {
+        }
+
+        if (!empty($storeDataByStoreIdKey)) {
             return is_array($storeDataByStoreIdKey) ? $storeDataByStoreIdKey : [$storeDataByStoreIdKey];
         }
 

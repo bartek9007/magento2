@@ -1,17 +1,39 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Magento\Cms\Test\Unit\Model\Page\Source;
 
 use Magento\Cms\Model\Page;
+use Magento\Cms\Model\Page\Source\IsActive;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class IsActiveTest extends \PHPUnit\Framework\TestCase
+/**
+ * Class IsActiveTest
+ *
+ * @package Magento\Cms\Test\Unit\Model\Page\Source
+ */
+class IsActiveTest extends TestCase
 {
     /**
-     * @var Page|\PHPUnit_Framework_MockObject_MockObject
+     * @var int
+     */
+    protected const STATUS_ENABLED = 1;
+
+    /**
+     * @var int
+     */
+    protected const STATUS_DISABLED = 0;
+
+    /**
+     * @var Page|MockObject
      */
     protected $cmsPageMock;
 
@@ -21,63 +43,47 @@ class IsActiveTest extends \PHPUnit\Framework\TestCase
     protected $objectManagerHelper;
 
     /**
-     * @var Page\Source\IsActive
+     * @var IsActive
      */
     protected $object;
 
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManagerHelper = new ObjectManager($this);
-        $this->cmsPageMock = $this->getMockBuilder(\Magento\Cms\Model\Page::class)
+        $this->cmsPageMock = $this->getMockBuilder(Page::class)
             ->disableOriginalConstructor()
             ->setMethods(['getAvailableStatuses'])
             ->getMock();
 
-        $this->object = $this->objectManagerHelper->getObject($this->getSourceClassName(), [
-            'cmsPage' => $this->cmsPageMock,
-        ]);
+        $this->object = $this->objectManagerHelper->getObject(
+            $this->getSourceClassName(),
+            ['cmsPage' => $this->cmsPageMock]
+        );
     }
 
     /**
      * @return string
      */
-    protected function getSourceClassName()
+    protected function getSourceClassName(): string
     {
-        return \Magento\Cms\Model\Page\Source\IsActive::class;
+        return IsActive::class;
     }
 
     /**
-     * @param array $availableStatuses
-     * @param array $expected
      * @return void
-     * @dataProvider getAvailableStatusesDataProvider
      */
-    public function testToOptionArray(array $availableStatuses, array $expected)
+    public function testToOptionArray(): void
     {
-        $this->cmsPageMock->expects($this->once())
-            ->method('getAvailableStatuses')
-            ->willReturn($availableStatuses);
+        $this->cmsPageMock->expects($this->never())->method('getAvailableStatuses');
 
-        $this->assertSame($expected, $this->object->toOptionArray());
-    }
-
-    /**
-     * @return array
-     */
-    public function getAvailableStatusesDataProvider()
-    {
-        return [
+        $expected =
             [
-                [],
-                [],
-            ],
-            [
-                ['testStatus' => 'testValue'],
-                [['label' => 'testValue', 'value' => 'testStatus']],
-            ],
-        ];
+                ['label' => __('Enabled'), 'value' => self::STATUS_ENABLED],
+                ['label' => __('Disabled'), 'value' => self::STATUS_DISABLED]
+            ];
+        $this->assertEquals($expected, $this->object->toOptionArray());
     }
 }

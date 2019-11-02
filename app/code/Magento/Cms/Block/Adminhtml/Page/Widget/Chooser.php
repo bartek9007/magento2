@@ -5,49 +5,62 @@
  */
 namespace Magento\Cms\Block\Adminhtml\Page\Widget;
 
+use Exception;
+use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Grid\Extended;
+use Magento\Backend\Helper\Data;
+use Magento\Cms\Api\Data\PageAvailableStatusesProviderInterface;
+use Magento\Cms\Model\Page;
+use Magento\Cms\Model\PageFactory;
+use Magento\Cms\Model\ResourceModel\Page\CollectionFactory;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Model\PageLayout\Config\BuilderInterface;
+
 /**
  * CMS page chooser for Wysiwyg CMS widget
  *
  * @author     Magento Core Team <core@magentocommerce.com>
  */
-class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
+class Chooser extends Extended
 {
     /**
-     * @var \Magento\Cms\Model\Page
+     * @var Page
      */
     protected $_cmsPage;
 
     /**
-     * @var \Magento\Cms\Model\PageFactory
+     * @var PageFactory
      */
     protected $_pageFactory;
 
     /**
-     * @var \Magento\Cms\Model\ResourceModel\Page\CollectionFactory
+     * @var CollectionFactory
      */
     protected $_collectionFactory;
 
     /**
-     * @var \Magento\Framework\View\Model\PageLayout\Config\BuilderInterface
+     * @var BuilderInterface
      */
     protected $pageLayoutBuilder;
 
     /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Magento\Cms\Model\Page $cmsPage
-     * @param \Magento\Cms\Model\PageFactory $pageFactory
-     * @param \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $collectionFactory
-     * @param \Magento\Framework\View\Model\PageLayout\Config\BuilderInterface $pageLayoutBuilder
+     * @param Context $context
+     * @param Data $backendHelper
+     * @param Page $cmsPage
+     * @param PageFactory $pageFactory
+     * @param CollectionFactory $collectionFactory
+     * @param BuilderInterface $pageLayoutBuilder
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
-        \Magento\Cms\Model\Page $cmsPage,
-        \Magento\Cms\Model\PageFactory $pageFactory,
-        \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $collectionFactory,
-        \Magento\Framework\View\Model\PageLayout\Config\BuilderInterface $pageLayoutBuilder,
+        Context $context,
+        Data $backendHelper,
+        Page $cmsPage,
+        PageFactory $pageFactory,
+        CollectionFactory $collectionFactory,
+        BuilderInterface $pageLayoutBuilder,
         array $data = []
     ) {
         $this->pageLayoutBuilder = $pageLayoutBuilder;
@@ -65,7 +78,6 @@ class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function _construct()
     {
         parent::_construct();
-        //$this->setDefaultSort('name');
         $this->setUseAjax(true);
         $this->setDefaultFilter(['chooser_is_active' => '1']);
     }
@@ -73,10 +85,12 @@ class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Prepare chooser element HTML
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Form Element
-     * @return \Magento\Framework\Data\Form\Element\AbstractElement
+     * @param AbstractElement $element Form Element
+     *
+     * @return AbstractElement
+     * @throws LocalizedException
      */
-    public function prepareElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function prepareElementHtml(AbstractElement $element)
     {
         $uniqId = $this->mathRandom->getUniqueHash($element->getId());
         $sourceUrl = $this->getUrl('cms/page_widget/chooser', ['uniq_id' => $uniqId]);
@@ -136,12 +150,12 @@ class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Prepare pages collection
      *
-     * @return \Magento\Backend\Block\Widget\Grid\Extended
+     * @return Extended
      */
     protected function _prepareCollection()
     {
         $collection = $this->_collectionFactory->create();
-        /* @var $collection \Magento\Cms\Model\ResourceModel\Page\CollectionFactory */
+        /* @var $collection CollectionFactory */
         $collection->setFirstStoreFlag(true);
         $this->setCollection($collection);
 
@@ -152,6 +166,7 @@ class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
      * Prepare columns for pages grid
      *
      * @return $this
+     * @throws Exception
      */
     protected function _prepareColumns()
     {
@@ -203,7 +218,7 @@ class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
                 'header' => __('Status'),
                 'index' => 'is_active',
                 'type' => 'options',
-                'options' => $this->_cmsPage->getAvailableStatuses(),
+                'options' => $this->getAvailableStatuses(),
                 'header_css_class' => 'col-status',
                 'column_css_class' => 'col-status'
             ]
@@ -220,5 +235,18 @@ class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
     public function getGridUrl()
     {
         return $this->getUrl('cms/page_widget/chooser', ['_current' => true]);
+    }
+
+    /**
+     * Get available statuses
+     *
+     * @return array
+     */
+    private function getAvailableStatuses(): array
+    {
+        $objectManager = ObjectManager::getInstance();
+        $pageAvailableStatusesProvider = $objectManager->get(PageAvailableStatusesProviderInterface::class);
+        /** @var $pageAvailableStatusesProvider PageAvailableStatusesProviderInterface */
+        return $pageAvailableStatusesProvider->get();
     }
 }

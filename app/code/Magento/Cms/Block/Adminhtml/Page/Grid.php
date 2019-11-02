@@ -5,40 +5,53 @@
  */
 namespace Magento\Cms\Block\Adminhtml\Page;
 
+use Exception;
+use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Grid\Extended;
+use Magento\Backend\Helper\Data;
+use Magento\Cms\Api\Data\PageAvailableStatusesProviderInterface;
+use Magento\Cms\Block\Adminhtml\Page\Grid\Renderer\Action;
+use Magento\Cms\Model\Page;
+use Magento\Cms\Model\ResourceModel\Page\CollectionFactory;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Data\Collection;
+use Magento\Framework\DataObject;
+use Magento\Framework\View\Model\PageLayout\Config\BuilderInterface;
+
 /**
  * Adminhtml cms pages grid
  */
-class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
+class Grid extends Extended
 {
     /**
-     * @var \Magento\Cms\Model\ResourceModel\Page\CollectionFactory
+     * @var CollectionFactory
      */
     protected $_collectionFactory;
 
     /**
-     * @var \Magento\Cms\Model\Page
+     * @var Page
      */
     protected $_cmsPage;
 
     /**
-     * @var \Magento\Framework\View\Model\PageLayout\Config\BuilderInterface
+     * @var BuilderInterface
      */
     protected $pageLayoutBuilder;
 
     /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Magento\Cms\Model\Page $cmsPage
-     * @param \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $collectionFactory
-     * @param \Magento\Framework\View\Model\PageLayout\Config\BuilderInterface $pageLayoutBuilder
+     * @param Context $context
+     * @param Data $backendHelper
+     * @param Page $cmsPage
+     * @param CollectionFactory $collectionFactory
+     * @param BuilderInterface $pageLayoutBuilder
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
-        \Magento\Cms\Model\Page $cmsPage,
-        \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $collectionFactory,
-        \Magento\Framework\View\Model\PageLayout\Config\BuilderInterface $pageLayoutBuilder,
+        Context $context,
+        Data $backendHelper,
+        Page $cmsPage,
+        CollectionFactory $collectionFactory,
+        BuilderInterface $pageLayoutBuilder,
         array $data = []
     ) {
         $this->_collectionFactory = $collectionFactory;
@@ -48,6 +61,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     }
 
     /**
+     * Init
+     *
      * @return void
      */
     protected function _construct()
@@ -76,7 +91,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Prepare columns
      *
-     * @return \Magento\Backend\Block\Widget\Grid\Extended
+     * @return Extended
+     * @throws Exception
      */
     protected function _prepareColumns()
     {
@@ -118,7 +134,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'header' => __('Status'),
                 'index' => 'is_active',
                 'type' => 'options',
-                'options' => $this->_cmsPage->getAvailableStatuses()
+                'options' => $this->getAvailableStatuses()
             ]
         );
 
@@ -150,7 +166,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'header' => __('Action'),
                 'sortable' => false,
                 'filter' => false,
-                'renderer' => \Magento\Cms\Block\Adminhtml\Page\Grid\Renderer\Action::class,
+                'renderer' => Action::class,
                 'header_css_class' => 'col-action',
                 'column_css_class' => 'col-action'
             ]
@@ -173,12 +189,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Filter store condition
      *
-     * @param \Magento\Framework\Data\Collection $collection
-     * @param \Magento\Framework\DataObject $column
+     * @param Collection $collection
+     * @param DataObject $column
      * @return void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function _filterStoreCondition($collection, \Magento\Framework\DataObject $column)
+    protected function _filterStoreCondition($collection, DataObject $column)
     {
         if (!($value = $column->getFilter()->getValue())) {
             return;
@@ -190,11 +206,24 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Row click url
      *
-     * @param \Magento\Framework\DataObject $row
+     * @param DataObject $row
      * @return string
      */
     public function getRowUrl($row)
     {
         return $this->getUrl('*/*/edit', ['page_id' => $row->getId()]);
+    }
+
+    /**
+     * Get available statuses
+     *
+     * @return array
+     */
+    private function getAvailableStatuses(): array
+    {
+        $objectManager = ObjectManager::getInstance();
+        $pageAvailableStatusesProvider = $objectManager->get(PageAvailableStatusesProviderInterface::class);
+        /** @var $pageAvailableStatusesProvider PageAvailableStatusesProviderInterface */
+        return $pageAvailableStatusesProvider->get();
     }
 }

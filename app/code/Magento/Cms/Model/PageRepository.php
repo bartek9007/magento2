@@ -6,20 +6,25 @@
 
 namespace Magento\Cms\Model;
 
+use Magento\Authorization\Model\UserContextInterface;
 use Magento\Cms\Api\Data;
+use Magento\Cms\Api\Data\PageInterface;
+use Magento\Cms\Api\Data\PageSearchResultsInterface;
 use Magento\Cms\Api\PageRepositoryInterface;
+use Magento\Cms\Model\Api\SearchCriteria\PageCollectionProcessor;
+use Magento\Cms\Model\ResourceModel\Page as ResourcePage;
+use Magento\Cms\Model\ResourceModel\Page\Collection;
+use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\AuthorizationInterface;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Reflection\DataObjectProcessor;
-use Magento\Cms\Model\ResourceModel\Page as ResourcePage;
-use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\AuthorizationInterface;
-use Magento\Authorization\Model\UserContextInterface;
 
 /**
  * Class PageRepository
@@ -147,11 +152,13 @@ class PageRepository implements PageRepositoryInterface
     /**
      * Save Page data
      *
-     * @param \Magento\Cms\Api\Data\PageInterface|Page $page
+     * @param PageInterface|Page $page
+     *
      * @return Page
      * @throws CouldNotSaveException
+     * @throws NoSuchEntityException
      */
-    public function save(\Magento\Cms\Api\Data\PageInterface $page)
+    public function save(PageInterface $page)
     {
         if ($page->getStoreId() === null) {
             $storeId = $this->storeManager->getStore()->getId();
@@ -198,8 +205,8 @@ class PageRepository implements PageRepositoryInterface
      * Load Page data by given Page Identity
      *
      * @param string $pageId
-     * @return Data\PageInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return PageInterface
+     * @throws NoSuchEntityException
      */
     public function getById($pageId)
     {
@@ -217,17 +224,17 @@ class PageRepository implements PageRepositoryInterface
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
-     * @return \Magento\Cms\Api\Data\PageSearchResultsInterface
+     * @param SearchCriteriaInterface $criteria
+     * @return PageSearchResultsInterface
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria)
+    public function getList(SearchCriteriaInterface $criteria)
     {
-        /** @var \Magento\Cms\Model\ResourceModel\Page\Collection $collection */
+        /** @var Collection $collection */
         $collection = $this->pageCollectionFactory->create();
 
         $this->collectionProcessor->process($criteria, $collection);
 
-        /** @var Data\PageSearchResultsInterface $searchResults */
+        /** @var PageSearchResultsInterface $searchResults */
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($criteria);
         $searchResults->setItems($collection->getItems());
@@ -238,11 +245,11 @@ class PageRepository implements PageRepositoryInterface
     /**
      * Delete Page
      *
-     * @param \Magento\Cms\Api\Data\PageInterface $page
+     * @param PageInterface $page
      * @return bool
      * @throws CouldNotDeleteException
      */
-    public function delete(\Magento\Cms\Api\Data\PageInterface $page)
+    public function delete(PageInterface $page)
     {
         try {
             $this->resource->delete($page);
@@ -276,8 +283,8 @@ class PageRepository implements PageRepositoryInterface
     private function getCollectionProcessor()
     {
         if (!$this->collectionProcessor) {
-            $this->collectionProcessor = \Magento\Framework\App\ObjectManager::getInstance()->get(
-                'Magento\Cms\Model\Api\SearchCriteria\PageCollectionProcessor'
+            $this->collectionProcessor = ObjectManager::getInstance()->get(
+                PageCollectionProcessor::class
             );
         }
         return $this->collectionProcessor;

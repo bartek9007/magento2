@@ -10,10 +10,15 @@ use Magento\Cms\Api\BlockRepositoryInterface;
 use Magento\Cms\Api\Data;
 use Magento\Cms\Api\Data\BlockInterface;
 use Magento\Cms\Api\Data\BlockInterfaceFactory;
+use Magento\Cms\Api\Data\BlockSearchResultsInterface;
+use Magento\Cms\Model\Api\SearchCriteria\BlockCollectionProcessor;
 use Magento\Cms\Model\ResourceModel\Block as ResourceBlock;
+use Magento\Cms\Model\ResourceModel\Block\Collection;
 use Magento\Cms\Model\ResourceModel\Block\CollectionFactory as BlockCollectionFactory;
 use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -108,8 +113,10 @@ class BlockRepository implements BlockRepositoryInterface
      * Save Block data
      *
      * @param BlockInterface $block
+     *
      * @return Block
      * @throws CouldNotSaveException
+     * @throws NoSuchEntityException
      */
     public function save(BlockInterface $block)
     {
@@ -148,17 +155,17 @@ class BlockRepository implements BlockRepositoryInterface
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
-     * @return \Magento\Cms\Api\Data\BlockSearchResultsInterface
+     * @param SearchCriteriaInterface $criteria
+     * @return BlockSearchResultsInterface
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria)
+    public function getList(SearchCriteriaInterface $criteria)
     {
-        /** @var \Magento\Cms\Model\ResourceModel\Block\Collection $collection */
+        /** @var Collection $collection */
         $collection = $this->blockCollectionFactory->create();
 
         $this->collectionProcessor->process($criteria, $collection);
 
-        /** @var Data\BlockSearchResultsInterface $searchResults */
+        /** @var BlockSearchResultsInterface $searchResults */
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($criteria);
         $searchResults->setItems($collection->getItems());
@@ -205,8 +212,8 @@ class BlockRepository implements BlockRepositoryInterface
     private function getCollectionProcessor()
     {
         if (!$this->collectionProcessor) {
-            $this->collectionProcessor = \Magento\Framework\App\ObjectManager::getInstance()->get(
-                'Magento\Cms\Model\Api\SearchCriteria\BlockCollectionProcessor'
+            $this->collectionProcessor = ObjectManager::getInstance()->get(
+                BlockCollectionProcessor::class
             );
         }
         return $this->collectionProcessor;

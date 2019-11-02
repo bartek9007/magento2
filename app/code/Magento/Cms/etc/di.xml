@@ -20,6 +20,8 @@
     <preference for="Magento\Cms\Api\PageRepositoryInterface" type="Magento\Cms\Model\PageRepository\ValidationComposite" />
     <preference for="Magento\Ui\Component\Wysiwyg\ConfigInterface" type="Magento\Cms\Model\Wysiwyg\Config"/>
     <preference for="Magento\Cms\Api\GetUtilityPageIdentifiersInterface" type="Magento\Cms\Model\GetUtilityPageIdentifiers" />
+    <preference for="Magento\Cms\Api\Data\BlockAvailableStatusesProviderInterface" type="Magento\Cms\Model\Block\AvailableStatusesProvider" />
+    <preference for="Magento\Cms\Api\Data\PageAvailableStatusesProviderInterface" type="Magento\Cms\Model\Page\AvailableStatusesProvider" />
     <type name="Magento\Cms\Model\Wysiwyg\Config">
         <arguments>
             <argument name="windowSize" xsi:type="array">

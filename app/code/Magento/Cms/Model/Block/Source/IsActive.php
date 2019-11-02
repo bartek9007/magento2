@@ -1,28 +1,36 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Magento\Cms\Model\Block\Source;
 
+use Magento\Cms\Model\Block;
+use Magento\Cms\Model\Block\AvailableStatusesProvider;
 use Magento\Framework\Data\OptionSourceInterface;
 
 /**
  * Class IsActive
+ * @deprecated
+ * @see \Magento\Cms\Model\Block\Source\Status
  */
 class IsActive implements OptionSourceInterface
 {
     /**
-     * @var \Magento\Cms\Model\Block
+     * @var Block
      */
     protected $cmsBlock;
 
     /**
      * Constructor
      *
-     * @param \Magento\Cms\Model\Block $cmsBlock
+     * @param Block $cmsBlock
      */
-    public function __construct(\Magento\Cms\Model\Block $cmsBlock)
+    public function __construct(Block $cmsBlock)
     {
         $this->cmsBlock = $cmsBlock;
     }
@@ -34,7 +42,7 @@ class IsActive implements OptionSourceInterface
      */
     public function toOptionArray()
     {
-        $availableOptions = $this->cmsBlock->getAvailableStatuses();
+        $availableOptions = $this->getAvailableStatuses();
         $options = [];
         foreach ($availableOptions as $key => $value) {
             $options[] = [
@@ -43,5 +51,16 @@ class IsActive implements OptionSourceInterface
             ];
         }
         return $options;
+    }
+
+    /**
+     * Get available statuses
+     *
+     * @return array
+     */
+    public function getAvailableStatuses(): array
+    {
+        $blockAvailableStatusesProvider = new AvailableStatusesProvider();
+        return $blockAvailableStatusesProvider->get();
     }
 }

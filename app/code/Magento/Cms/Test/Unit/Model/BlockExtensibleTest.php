@@ -378,17 +378,4 @@ class BlockExtensibleTest extends TestCase
         $actual = $this->blockExtensible->getStores();
         $this->assertSame([], $actual);
     }
-
-    /**
-     * Test getAvailableStatuses method
-     *
-     * @test
-     *
-     * @return void
-     */
-    public function testGetAvailableStatuses()
-    {
-        $result = $this->blockExtensible->getAvailableStatuses();
-        $this->assertInternalType('array', $result);
-    }
 }

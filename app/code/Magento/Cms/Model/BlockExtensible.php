@@ -9,9 +9,11 @@ declare(strict_types=1);
 
 namespace Magento\Cms\Model;
 
+use Magento\Cms\Api\Data\BlockAvailableStatusesProviderInterface;
 use Magento\Cms\Api\Data\BlockExtensibleExtensionInterface;
 use Magento\Cms\Api\Data\BlockExtensibleInterface;
 use Magento\Cms\Model\ResourceModel\Block as BlockResource;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\AbstractExtensibleModel;
@@ -32,16 +34,6 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
      * @var string
      */
     public const CACHE_TAG = 'cms_b';
-
-    /**
-     * @var int
-     */
-    public const STATUS_ENABLED = 1;
-
-    /**
-     * @var int
-     */
-    public const STATUS_DISABLED = 0;
 
     /**
      * @var string
@@ -269,7 +261,9 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
 
         if (!empty($storeDataByStoresKey)) {
             return is_array($storeDataByStoresKey) ? $storeDataByStoresKey : [$storeDataByStoresKey];
-        } elseif (!empty($storeDataByStoreIdKey)) {
+        }
+
+        if (!empty($storeDataByStoreIdKey)) {
             return is_array($storeDataByStoreIdKey) ? $storeDataByStoreIdKey : [$storeDataByStoreIdKey];
         }
 
@@ -277,16 +271,21 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
     }
 
     /**
-     * TODO: Move to separate OptionSourceInterface instance
-     *
      * Prepare block's statuses.
      *
      * @return array
      * @deprecated
+     *
+     * @see \Magento\Cms\APi\Data\BlockAvailableStatusesProviderInterface
+     *
+     * @codeCoverageIgnore
      */
     public function getAvailableStatuses(): array
     {
-        return [self::STATUS_ENABLED => __('Enabled'), self::STATUS_DISABLED => __('Disabled')];
+        $objectManager = ObjectManager::getInstance();
+        $blockAvailableStatusesProvider = $objectManager->get(BlockAvailableStatusesProviderInterface::class);
+        /** @var $blockAvailableStatusesProvider BlockAvailableStatusesProviderInterface */
+        return $blockAvailableStatusesProvider->get();
     }
 
     /**

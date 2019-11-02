@@ -1,21 +1,28 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Magento\Cms\Model\Page\Source;
 
 /**
- * Is active filter source
- * @deprecated
- * @see \Magento\Cms\Model\Page\Source\StatusFilter
+ * Class StatusFilter
+ *
+ * @package Magento\Cms\Model\Page\Source
  */
-class IsActiveFilter extends IsActive
+class StatusFilter extends Status
 {
     /**
-     * @inheritdoc
+     * Get options
+     *
+     * @return array
+     * @codeCoverageIgnore
      */
-    public function toOptionArray()
+    public function toOptionArray(): array
     {
         return array_merge([['label' => '', 'value' => '']], parent::toOptionArray());
     }

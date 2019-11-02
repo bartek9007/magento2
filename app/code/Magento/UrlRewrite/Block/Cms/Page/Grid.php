@@ -5,13 +5,20 @@
  */
 namespace Magento\UrlRewrite\Block\Cms\Page;
 
+use Exception;
+use Magento\Cms\Api\Data\PageAvailableStatusesProviderInterface;
+use Magento\Cms\Block\Adminhtml\Page\Grid as PageGrid;
+use Magento\Cms\Model\Page;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\DataObject;
+
 /**
  * CMS pages grid for URL rewrites
  *
  * @author     Magento Core Team <core@magentocommerce.com>
  * @SuppressWarnings(PHPMD.DepthOfInheritance)
  */
-class Grid extends \Magento\Cms\Block\Adminhtml\Page\Grid
+class Grid extends PageGrid
 {
     /**
      * Constructor
@@ -38,6 +45,7 @@ class Grid extends \Magento\Cms\Block\Adminhtml\Page\Grid
      * Prepare columns layout
      *
      * @return $this
+     * @throws Exception
      */
     protected function _prepareColumns()
     {
@@ -66,7 +74,7 @@ class Grid extends \Magento\Cms\Block\Adminhtml\Page\Grid
                 'header' => __('Status'),
                 'index' => 'is_active',
                 'type' => 'options',
-                'options' => $this->_cmsPage->getAvailableStatuses()
+                'options' => $this->getAvailableStatuses()
             ]
         );
 
@@ -86,11 +94,25 @@ class Grid extends \Magento\Cms\Block\Adminhtml\Page\Grid
     /**
      * Return row url for js event handlers
      *
-     * @param \Magento\Cms\Model\Page|\Magento\Framework\DataObject $row
+     * @param Page|DataObject $row
+     *
      * @return string
      */
     public function getRowUrl($row)
     {
         return $this->getUrl('adminhtml/*/edit', ['cms_page' => $row->getId()]);
+    }
+
+    /**
+     * Get available statuses
+     *
+     * @return array
+     */
+    private function getAvailableStatuses(): array
+    {
+        $objectManager = ObjectManager::getInstance();
+        $pageAvailableStatusesProvider = $objectManager->get(PageAvailableStatusesProviderInterface::class);
+        /** @var $pageAvailableStatusesProvider PageAvailableStatusesProviderInterface */
+        return $pageAvailableStatusesProvider->get();
     }
 }

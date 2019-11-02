@@ -193,7 +193,7 @@
         </column>
         <column name="is_active" component="Magento_Ui/js/grid/columns/select">
             <settings>
-                <options class="Magento\Cms\Model\Page\Source\IsActive"/>
+                <options class="Magento\Cms\Model\Page\Source\Status"/>
                 <filter>select</filter>
                 <editor>
                     <editorType>select</editorType>
