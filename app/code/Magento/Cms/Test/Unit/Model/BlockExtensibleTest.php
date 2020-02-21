@@ -107,7 +107,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetIdentities()
+    public function testGetIdentities(): void
     {
         $result = $this->blockExtensible->getIdentities();
         $this->assertInternalType('array', $result);
@@ -120,7 +120,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetId()
+    public function testGetId(): void
     {
         $blockId = 12;
         $this->blockExtensible->setData(Block::BLOCK_ID, $blockId);
@@ -136,7 +136,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetIdentifier()
+    public function testGetIdentifier(): void
     {
         $identifier = 'test01';
         $this->blockExtensible->setData(Block::IDENTIFIER, $identifier);
@@ -152,7 +152,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetTitle()
+    public function testGetTitle(): void
     {
         $title = 'test02';
         $this->blockExtensible->setData(Block::TITLE, $title);
@@ -168,7 +168,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetContent()
+    public function testGetContent(): void
     {
         $content = 'test03';
         $this->blockExtensible->setData(Block::CONTENT, $content);
@@ -184,7 +184,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetCreationTime()
+    public function testGetCreationTime(): void
     {
         $creationTime = 'test04';
         $this->blockExtensible->setData(Block::CREATION_TIME, $creationTime);
@@ -200,7 +200,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetUpdateTime()
+    public function testGetUpdateTime(): void
     {
         $updateTime = 'test05';
         $this->blockExtensible->setData(Block::UPDATE_TIME, $updateTime);
@@ -216,7 +216,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testIsActive()
+    public function testIsActive(): void
     {
         $isActive = true;
         $this->blockExtensible->setData(Block::IS_ACTIVE, $isActive);
@@ -231,7 +231,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testSetId()
+    public function testSetId(): void
     {
         $blockId = 15;
         $this->blockExtensible->setId($blockId);
@@ -247,7 +247,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testSetIdentifier()
+    public function testSetIdentifier(): void
     {
         $identifier = 'test06';
         $this->blockExtensible->setIdentifier($identifier);
@@ -263,7 +263,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testSetTitle()
+    public function testSetTitle(): void
     {
         $title = 'test07';
         $this->blockExtensible->setTitle($title);
@@ -279,7 +279,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testSetContent()
+    public function testSetContent(): void
     {
         $content = 'test08';
         $this->blockExtensible->setContent($content);
@@ -295,7 +295,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testSetCreationTime()
+    public function testSetCreationTime(): void
     {
         $creationTime = 'test09';
         $this->blockExtensible->setCreationTime($creationTime);
@@ -311,7 +311,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testSetUpdateTime()
+    public function testSetUpdateTime(): void
     {
         $updateTime = 'test10';
         $this->blockExtensible->setUpdateTime($updateTime);
@@ -327,7 +327,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testSetIsActive()
+    public function testSetIsActive(): void
     {
         $this->blockExtensible->setIsActive(false);
         $result = $this->blockExtensible->getData(Block::IS_ACTIVE);
@@ -341,11 +341,11 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetStoresWhenDataIsStoredUnderStoresKey()
+    public function testGetStoresWhenDataIsStoredUnderStoresKey(): void
     {
-        $stores = [1, 4, 9];
+        $stores = ['1', '4', '9'];
         $this->blockExtensible->setData('stores', $stores);
-        $expected = $stores;
+        $expected = [1, 4, 9];
         $actual = $this->blockExtensible->getStores();
         $this->assertSame($expected, $actual);
     }
@@ -357,11 +357,11 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetStoresWhenDataIsStoreIdKey()
+    public function testGetStoresWhenDataIsStoreIdKey(): void
     {
-        $stores = [1, 4, 9];
+        $stores = ['1', '4', '9'];
         $this->blockExtensible->setData('store_id', $stores);
-        $expected = $stores;
+        $expected = [1, 4, 9];
         $actual = $this->blockExtensible->getStores();
         $this->assertSame($expected, $actual);
     }
@@ -373,7 +373,7 @@ class BlockExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetStoresWhenThereIsNoStoreData()
+    public function testGetStoresWhenThereIsNoStoreData(): void
     {
         $actual = $this->blockExtensible->getStores();
         $this->assertSame([], $actual);

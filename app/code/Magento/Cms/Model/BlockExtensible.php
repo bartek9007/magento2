@@ -260,11 +260,15 @@ class BlockExtensible extends AbstractExtensibleModel implements BlockExtensible
         $storeDataByStoreIdKey = $this->getData('store_id');
 
         if (!empty($storeDataByStoresKey)) {
-            return is_array($storeDataByStoresKey) ? $storeDataByStoresKey : [$storeDataByStoresKey];
+            return is_array($storeDataByStoresKey)
+                ? array_map('intval', $storeDataByStoresKey)
+                : [(int) $storeDataByStoresKey];
         }
 
         if (!empty($storeDataByStoreIdKey)) {
-            return is_array($storeDataByStoreIdKey) ? $storeDataByStoreIdKey : [$storeDataByStoreIdKey];
+            return is_array($storeDataByStoreIdKey)
+                ? array_map('intval', $storeDataByStoreIdKey)
+                : [(int) $storeDataByStoreIdKey];
         }
 
         return [];

@@ -98,7 +98,7 @@ class PageExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetStoresWhenDataIsStoredUnderStoresKey()
+    public function testGetStoresWhenDataIsStoredUnderStoresKey(): void
     {
         $stores = [1, 4, 9];
         $this->pageExtensible->setData('stores', $stores);
@@ -114,7 +114,7 @@ class PageExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetStoresWhenDataIsStoreIdKey()
+    public function testGetStoresWhenDataIsStoreIdKey(): void
     {
         $stores = [1, 4, 9];
         $this->pageExtensible->setData('store_id', $stores);
@@ -130,7 +130,7 @@ class PageExtensibleTest extends TestCase
      *
      * @return void
      */
-    public function testGetStoresWhenThereIsNoStoreData()
+    public function testGetStoresWhenThereIsNoStoreData(): void
     {
         $actual = $this->pageExtensible->getStores();
         $this->assertSame([], $actual);
@@ -231,6 +231,7 @@ class PageExtensibleTest extends TestCase
      * @expectedExceptionMessage This identifier is reserved for "CMS No Cookies Page" in configuration.
      *
      * @return void
+     * @throws LocalizedException
      */
     public function testBeforeSaveNoCookiesIdentifier(): void
     {
